@@ -1,10 +1,22 @@
 Heroku buildpack: MeCab
 ======================
 
-This is a buildpack that enables using the [mecab gem](https://rubygems.org/gems/mecab) on Heroku Cedar. This buildpack was forked from [heroku-buildpack-gsl-ruby](https://github.com/tomwolfe/heroku-buildpack-gsl-ruby). A big thank you to [jkatzer](https://github.com/jkatzer) who did 99.9% of the work to adapt the fork to get MeCab working on Heroku. Any mistakes though are purely my own. 
+This is a buildpack that enables using the [mecab gem](https://rubygems.org/gems/mecab) on Heroku Cedar. This buildpack was forked from [heroku-buildpack-gsl-ruby](https://github.com/tomwolfe/heroku-buildpack-gsl-ruby). A big thank you to [jkatzer](https://github.com/jkatzer) who did 99.9% of the work to adapt the fork to get MeCab working on Heroku. Any mistakes are purely my own. 
 
-    heroku create --stack cedar --buildpack https://github.com/diasks2/heroku-buildpack-mecab.git
-    git push heroku master
+To get MeCab working on Heroku follow these steps:
+
+1) Add the [mecab gem](https://rubygems.org/gems/mecab) to your Gemfile and run bundle install  
+`gem 'mecab', '0.996'`  
+`$ bundle install`  
+
+2) Add the following config variables to your Heroku app  
+`$ heroku config:set BUILDPACK_URL=https://github.com/diasks2/heroku-buildpack-mecab.git`  
+`$ heroku config:set LD_LIBRARY_PATH=/app/vendor/mecab/lib`  
+
+3) Push your app to Heroku  
+`$ git push heroku master`  
+
+N.B. This buildpack points to the file `libmecab-heroku.tar.gz` which is currently stored on S3. There is no guarantee that this file will always be available at this location. Thus, if you have trouble getting this buildpack to work, take the `libmecab-heroku.tar.gz` file which is stored in this repo at `mecab/libmecab-heroku.tar.gz` and store it on S3. Make sure it is set to public. Then fork this repo and change line 13 in `lib/language_pack/ruby.rb` to link to the new location of the file on S3.
 
 Heroku buildpack: Ruby
 ======================
