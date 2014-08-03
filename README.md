@@ -16,7 +16,7 @@ To get MeCab working on Heroku follow these steps:
 3) Push your app to Heroku  
 `$ git push heroku master`  
 
-N.B. This buildpack points to the file `libmecab-heroku.tar.gz` which is currently stored on S3. There is no guarantee that this file will always be available at this location. Thus, if you have trouble getting this buildpack to work, take the `libmecab-heroku.tar.gz` file which is stored in this repo at [mecab/libmecab-heroku.tar.gz](https://github.com/diasks2/heroku-buildpack-mecab/tree/master/mecab) and store it on S3. Make sure it is set to public. Then fork this repo and change line 12 in [lib/language_pack/ruby.rb](https://github.com/diasks2/heroku-buildpack-mecab/blob/master/lib/language_pack/ruby.rb#L13) to link to the new location of the file on S3.
+N.B. This buildpack points to the file `libmecab-heroku.tar.gz` which is currently stored on S3. There is no guarantee that this file will always be available at this location. Thus, if you have trouble getting this buildpack to work, take the `libmecab-heroku.tar.gz` file which is stored in this repo at [mecab/libmecab-heroku.tar.gz](https://github.com/diasks2/heroku-buildpack-mecab/tree/master/mecab) and store it on S3. Make sure it is set to public. Then fork this repo and change line 12 in [lib/language_pack/ruby.rb](https://github.com/diasks2/heroku-buildpack-mecab/blob/master/lib/language_pack/ruby.rb#L12) to link to the new location of the file on S3.
 
 Heroku buildpack: Ruby
 ======================
