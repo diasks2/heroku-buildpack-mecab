@@ -293,7 +293,14 @@ ERROR_MSG
             FileUtils.rm(file)
             FileUtils.rm(sha_file)
           else
-            @fetchers[:buildpack].fetch_untar("#{ruby_version.version}.tgz")
+            ruby_v_num_arr = ruby_version.version.split('-')[1].split('.')
+            if (ruby_v_num_arr[0].to_i >= 2 && ruby_v_num_arr[1].to_i >= 1 && ruby_v_num_arr[2].to_i >= 3) ||
+              (ruby_v_num_arr[0].to_i >= 2 && ruby_v_num_arr[1].to_i >= 2) ||
+              (ruby_v_num_arr[0].to_i >= 3)
+              @fetchers[:buildpack_cedar].fetch_untar("#{ruby_version.version}.tgz")
+            else
+              @fetchers[:buildpack].fetch_untar("#{ruby_version.version}.tgz")
+            end
           end
         end
       end
