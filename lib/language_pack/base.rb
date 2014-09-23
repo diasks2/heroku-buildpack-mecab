@@ -15,6 +15,7 @@ class LanguagePack::Base
   include LanguagePack::ShellHelpers
 
   VENDOR_URL = "https://s3-external-1.amazonaws.com/heroku-buildpack-ruby"
+  CEDAR_VENDOR_URL = "https://s3-external-1.amazonaws.com/heroku-buildpack-ruby/cedar"
 
   attr_reader :build_path, :cache
 
@@ -29,7 +30,7 @@ class LanguagePack::Base
       @id           = Digest::SHA1.hexdigest("#{Time.now.to_f}-#{rand(1000000)}")[0..10]
       @warnings     = []
       @deprecations = []
-      @fetchers     = {:buildpack => LanguagePack::Fetcher.new(VENDOR_URL) }
+      @fetchers     = {:buildpack => LanguagePack::Fetcher.new(VENDOR_URL), :buildpack_cedar => LanguagePack::Fetcher.new(CEDAR_VENDOR_URL) }
 
       Dir.chdir build_path
     end
