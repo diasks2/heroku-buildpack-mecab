@@ -2,15 +2,26 @@ require 'spec_helper'
 
 describe "BundlerWrapper" do
 
+  before(:each) do
+    if ENV['RUBYOPT']
+      @original_rubyopt = ENV['RUBYOPT']
+      ENV['RUBYOPT'] = ENV['RUBYOPT'].sub('-rbundler/setup', '')
+    end
+
+    @bundler = LanguagePack::Helpers::BundlerWrapper.new
+  end
+
   after(:each) do
-    FileUtils.remove_entry_secure("tmp") if Dir.exist?("tmp")
+    if ENV['RUBYOPT']
+      ENV['RUBYOPT'] = @original_rubyopt
+    end
+
+    @bundler.clean
   end
 
   it "detects windows gemfiles" do
     Hatchet::App.new("rails4_windows_mri193").in_directory do |dir|
-      @bundler = LanguagePack::Helpers::BundlerWrapper.new(gemfile_path: "./Gemfile")
-      expect(@bundler.windows_gemfile_lock?).to be_true
+      expect(@bundler.install.windows_gemfile_lock?).to be_true
     end
   end
 end
-
