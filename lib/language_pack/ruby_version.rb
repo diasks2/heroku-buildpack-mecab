@@ -2,11 +2,12 @@ require "language_pack/shell_helpers"
 
 module LanguagePack
   class RubyVersion
-    class BadVersionError < StandardError
+    class BadVersionError < BuildpackError
       def initialize(output = "")
-        msg = "Can not parse Ruby Version:\n"
-        msg << "Valid versions listed on: https://devcenter.heroku.com/articles/ruby-support\n"
+        msg = ""
         msg << output
+        msg << "Can not parse Ruby Version:\n"
+        msg << "Valid versions listed on: https://devcenter.heroku.com/articles/ruby-support\n"
         super msg
       end
     end
@@ -27,10 +28,10 @@ module LanguagePack
     attr_reader :set, :version, :version_without_patchlevel, :patchlevel, :engine, :ruby_version, :engine_version
     include LanguagePack::ShellHelpers
 
-    def initialize(bundler, app = {})
-      @set          = nil
-      @bundler      = bundler
-      @app          = app
+    def initialize(bundler_output, app = {})
+      @set            = nil
+      @bundler_output = bundler_output
+      @app            = app
       set_version
       parse_version
 
@@ -74,10 +75,6 @@ module LanguagePack
     end
 
     private
-    def gemfile
-      ruby_version = @bundler.ruby_version
-      return ruby_version.to_s
-    end
 
     def none
       if @app[:is_new]
@@ -90,13 +87,12 @@ module LanguagePack
     end
 
     def set_version
-      bundler_output = gemfile
-      if bundler_output.empty?
+      if @bundler_output.empty?
         @set     = false
         @version = none
       else
         @set     = :gemfile
-        @version = bundler_output.sub('(', '').sub(')', '').split.join('-')
+        @version = @bundler_output
       end
     end
 

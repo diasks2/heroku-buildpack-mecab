@@ -12,7 +12,7 @@ class LanguagePack::Rails4 < LanguagePack::Rails3
       rails_version = bundler.gem_version('railties')
       return false unless rails_version
       is_rails4 = rails_version >= Gem::Version.new('4.0.0.beta') &&
-                  rails_version <  Gem::Version.new('5.0.0')
+                  rails_version <  Gem::Version.new('4.1.0.beta1')
       return is_rails4
     end
   end
@@ -69,8 +69,6 @@ WARNING
   def run_assets_precompile_rake_task
     instrument "rails4.run_assets_precompile_rake_task" do
       log("assets_precompile") do
-        setup_database_url_env
-
         if Dir.glob('public/assets/manifest-*.json').any?
           puts "Detected manifest file, assuming assets were compiled locally"
           return true
@@ -80,27 +78,24 @@ WARNING
         return true unless precompile.is_defined?
 
         topic("Preparing app for Rails asset pipeline")
-        ENV["RAILS_GROUPS"] ||= "assets"
-        ENV["RAILS_ENV"]    ||= "production"
 
         @cache.load public_assets_folder
         @cache.load default_assets_cache
 
-        precompile.invoke
+        precompile.invoke(env: rake_env)
 
         if precompile.success?
           log "assets_precompile", :status => "success"
           puts "Asset precompilation completed (#{"%.2f" % precompile.time}s)"
 
           puts "Cleaning assets"
-          pipe "env PATH=$PATH:bin bundle exec rake assets:clean 2>& 1"
+          rake.task("assets:clean").invoke(env: rake_env)
 
           cleanup_assets_cache
           @cache.store public_assets_folder
           @cache.store default_assets_cache
         else
-          log "assets_precompile", :status => "failure"
-          error "Precompiling assets failed."
+          precompile_fail(precompile.output)
         end
       end
     end
